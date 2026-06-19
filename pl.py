@@ -64,9 +64,4 @@ if res.success:
 else:
     st.error(f"No se encontró solución: {res.message}")
 
-**Pasos para ejecutar:**
-1. Guarda el código anterior en un archivo llamado `app.py`.
-2. Asegúrate de tener las librerías instaladas: `pip install streamlit scipy numpy`.
-3. En tu terminal, ejecuta: `streamlit run app.py`.
 
-¿Te gustaría que agreguemos algún gráfico del área de factibilidad o alguna otra métrica específica?
