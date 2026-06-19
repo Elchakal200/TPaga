@@ -24,8 +24,15 @@ st.sidebar.markdown("*Configurá el costo por kWh asociado a cada dispositivo*")
 costo_kwh_d1 = st.sidebar.slider("Costo por kWh del Dispositivo 1 (x) [USD]:", min_value=0.1, max_value=5.0, value=1.0, step=0.1)
 costo_kwh_d2 = st.sidebar.slider("Costo por kWh del Dispositivo 2 (y) [USD]:", min_value=0.1, max_value=5.0, value=1.0, step=0.1)
 
+# --- NUEVA SECCIÓN: ELECTRODOMÉSTICO ADICIONAL ---
+st.sidebar.subheader("🏠 Consumo Doméstico Adicional")
+st.sidebar.markdown("*Agregá una carga fija para evaluar el impacto en el costo mensual*")
+nombre_aparato = st.sidebar.text_input("Nombre del electrodoméstico:", value="Heladera")
+potencia_w = st.sidebar.number_input("Potencia estimada (en Watts):", min_value=1, max_value=5000, value=250)
+horas_mes = st.sidebar.number_input("Horas de uso al mes:", min_value=1, max_value=744, value=120) # 744h max en un mes de 31 días
+
 st.sidebar.subheader("📉 Límites de las Restricciones")
-st.sidebar.markdown("*Restricciones operativas del sistema*")
+st.sidebar.markdown("*Restricciones operativas del sistema de producción*")
 limite_capacidad = st.sidebar.number_input("Capacidad máxima combinada (x + y ≤ C):", value=90)
 minimo_energia = st.sidebar.number_input("Consumo mínimo requerido de energía (4x + 6y ≥ E):", value=390)
 limite_ensamblaje = st.sidebar.number_input("Tiempo máximo de ensamblaje (15x + 40y ≤ T):", value=2000)
@@ -92,14 +99,29 @@ with col2:
         st.metric(label="Unidades de x (Dispositivo 1)", value=f"{val_x:.4f}")
         st.metric(label="Unidades de y (Dispositivo 2)", value=f"{val_y:.4f}")
         
-        # Cálculos de consumo y costos basados en la solución y los deslizadores
+        # Cálculos de consumo de la optimización
         energia_x = 4 * val_x
         energia_y = 6 * val_y
-        costo_total_energia = (energia_x * costo_kwh_d1) + (energia_y * costo_kwh_d2)
+        costo_produccion_energia = (energia_x * costo_kwh_d1) + (energia_y * costo_kwh_d2)
+        
+        # --- CÁLCULO DE LA NUEVA CARGA FIJA ---
+        # Formula: (Watts * Horas) / 1000 = kWh
+        kwh_electrodomestico = (potencia_w * horas_mes) / 1000
+        # Promedio del costo del kWh para cobrar el consumo de casa
+        costo_medio_kwh = (costo_kwh_d1 + costo_kwh_d2) / 2
+        costo_electrodomestico = kwh_electrodomestico * costo_medio_kwh
+        
+        costo_total_combinado = costo_produccion_energia + costo_electrodomestico
         
         st.markdown("### ⚡ Análisis Económico-Energético")
-        st.write(f"🔹 **Energía consumida por x:** {energia_x:.2f} kWh (Costo: ${energia_x * costo_kwh_d1:.2f})")
-        st.write(f"🔹 **Energía consumida por y:** {energia_y:.2f} kWh (Costo: ${energia_y * costo_kwh_d2:.2f})")
-        st.info(f"💰 **Costo total de energía eléctrica:** ${costo_total_energia:.2f}")
+        st.write(f"🔹 **Energía de producción (x):** {energia_x:.2f} kWh (Costo: ${energia_x * costo_kwh_d1:.2f})")
+        st.write(f"🔹 **Energía de producción (y):** {energia_y:.2f} kWh (Costo: ${energia_y * costo_kwh_d2:.2f})")
+        
+        st.markdown("---")
+        st.write(f"🏠 **Consumo fijo ({nombre_aparato}):** {kwh_electrodomestico:.2f} kWh")
+        st.write(f"💵 **Costo estimado de {nombre_aparato}:** ${costo_electrodomestico:.2f} *(calculado con costo promedio de ${costo_medio_kwh:.2f}/kWh)*")
+        
+        st.markdown("---")
+        st.info(f"💰 **Costo TOTAL de energía eléctrica (Producción + {nombre_aparato}):** ${costo_total_combinado:.2f}")
     else:
         st.write("No se pueden calcular resultados para un modelo sin solución.")
