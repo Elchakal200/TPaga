@@ -28,7 +28,7 @@ st.sidebar.subheader("📉 Límites de las Restricciones")
 st.sidebar.markdown("*Restricciones operativas del sistema*")
 limite_capacidad = st.sidebar.number_input("Capacidad máxima combinada (x + y ≤ C):", value=90)
 minimo_energia = st.sidebar.number_input("Consumo mínimo requerido de energía (4x + 6y ≥ E):", value=390)
-limite_ensamblaje = st.sidebar.number_input("Tiempo máximo de ensamblaje (15x + 40y ≤ T):", value=2000)
+limite_ensamblaje = st.sidebar.number_input("Tiempo máximo de ensamblaje (15x + 40y ≤ T):", value=200)
 
 st.sidebar.subheader("⚙️ Tipo de Variables")
 es_entero = st.sidebar.checkbox("Resolver como números enteros (unidades completas)", value=False)
